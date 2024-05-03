@@ -137,7 +137,7 @@ let pdsStructure = {
             scholarship: "",
         },
     },
-    civil_service: [
+    civil_services: [
         {
             service: "",
             rating: "",
@@ -243,97 +243,70 @@ let pdsStructure = {
     }
 };
 
-let personalInformation = {
-    name: {
-
-    }
-};
-
-let familyBackground = {
-
-};
-
-let civilService = {
-
-};
-
-let workExperience = {
-
-};
-
-let voluntaryWorks = {
-
-};
-
-let learningDevelopment = {
-
-};
-
-let otherInfo = {
-
-};
+// name: {
+//     firstname: {
+//         type: String,
+//         required: true,
+//     },
+//     lastname: {
+//         type: String,
+//         required: true,
+//     },
+//     middlename: {
+//         type: String,
+//         required: false,
+//     },
+//     extension: {
+//         type: String,
+//     },
+// },
+// birth_date: String,
+// birth_place: String,
+// gender: String,
+// citizenship: {
+//     value: String,
+//     is_dual: Boolean,
+//     by_birth: Boolean,
+//     by_naturalization: Boolean,
+//     country: String,
+// },
+// civil_status: String,
+// height: Number,
+// weight: Number,
+// blood_type: String,
+// gsis_no: String,
+// philhealth_no: String,
+// sss_no: String,
+// tin_no: String,
+// agency_employee_no: String,
+// residential_address: {
+//     house_no: String,
+//     street: String,
+//     subdivision: String,
+//     barangay: String,
+//     city: String,
+//     province: String,
+//     zipcode: String,
+// },
+// residentail_permanent_is_same: Boolean,
+// permanent_address: {
+//     house_no: String,
+//     street: String,
+//     subdivision: String,
+//     barangay: String,
+//     city: String,
+//     province: String,
+//     zipcode: String,
+// },
+// telephone_no: String,
+// mobile_no: String,
+// email: String,
 
 const pdsSchema = mongoose.Schema({
     // personal information
     personal_information: {
-        name: {
-            firstname: {
-                type: String,
-                required: true,
-            },
-            lastname: {
-                type: String,
-                required: true,
-            },
-            middlename: {
-                type: String,
-                required: false,
-            },
-            extension: {
-                type: String,
-            },
-        },
-        birth_date: String,
-        birth_place: String,
-        gender: String,
-        citizenship: {
-            value: String,
-            is_dual: Boolean,
-            by_birth: Boolean,
-            by_naturalization: Boolean,
-            country: String,
-        },
-        civil_status: String,
-        height: Number,
-        weight: Number,
-        blood_type: String,
-        gsis_no: String,
-        philhealth_no: String,
-        sss_no: String,
-        tin_no: String,
-        agency_employee_no: String,
-        residential_address: {
-            house_no: String,
-            street: String,
-            subdivision: String,
-            barangay: String,
-            city: String,
-            province: String,
-            zipcode: String,
-        },
-        residentail_permanent_is_same: Boolean,
-        permanent_address: {
-            house_no: String,
-            street: String,
-            subdivision: String,
-            barangay: String,
-            city: String,
-            province: String,
-            zipcode: String,
-        },
-        telephone_no: String,
-        mobile_no: String,
-        email: String,
+        type: mongoose.Schema.Types.Mixed,
+        default: {},
     },
     // family background
     family_background: {
