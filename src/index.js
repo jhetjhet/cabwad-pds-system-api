@@ -47,7 +47,7 @@ mongoose.connection.once('open', () => {
 
 app.use('/auth', authenticationRoutes);
 
-app.use('/api', pdsRoutes);
+app.use('/api/employee', pdsRoutes);
 app.use('/api', userRoutes);
 
 app.get('/api/temp', async (req, res) => {
