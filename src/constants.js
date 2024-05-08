@@ -2,8 +2,13 @@
 
 SUPER_ADMIN = 1;
 ADMIN = 2;
+EMPLOYEE = 3;
+
+USERNAME_ID_START = 10000;
 
 module.exports = {
     SUPER_ADMIN,
     ADMIN,
+    EMPLOYEE,
+    USERNAME_ID_START,
 }

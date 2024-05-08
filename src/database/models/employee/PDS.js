@@ -48,4 +48,22 @@ const pdsSchema = mongoose.Schema({
     },
 });
 
+// Create compound index for unique combination of fields
+pdsSchema.index({
+    'personal_information.name.firstname': 1,
+    'personal_information.name.lastname': 1,
+    'personal_information.name.middlename': 1,
+    'personal_information.birth_date': 1,
+    'personal_information.gender': 1
+}, { unique: true });
+
+// Middleware function to handle duplicate key error
+pdsSchema.post('save', function(error, doc, next) {
+    if (error.name === 'MongoError' && error.code === 11000) {
+        // Duplicate key error
+        return next(new Error('Employee with this combination already exists'));
+    }
+    next(error);
+});
+
 module.exports = mongoose.model('PDS', pdsSchema);
