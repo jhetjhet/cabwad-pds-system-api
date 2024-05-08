@@ -1,5 +1,6 @@
 const { Role } = require('../database/models/authentication/role');
 const User = require('../database/models/authentication/user');
+const PDS = require('../database/models/employee/PDS');
 const {
     hashPassword,
 } = require("./authenticationMiddlewares");
@@ -31,6 +32,20 @@ const lists = async (req, res, next) => {
 
         const totalCount = await User.countDocuments(query);
 
+        for(let user of users) {
+            
+            if(!user.pds) {
+                continue;
+            }
+            
+            let existPds = await PDS.findById(user.pds);
+            
+            if(!existPds) {
+                user.pds = null;
+                await user.save();
+            }
+        }
+
         res.json({
             users,
             totalPages: Math.ceil(totalCount / limit),
@@ -55,7 +70,11 @@ const update = async (req, res, next) => {
         const existUser = await User.findById(userId);
 
         if (!existUser) {
-            return res.status(404).send('User not found.');
+            return res.status(404).end('User not found.');
+        }
+
+        if(existUser.username == 'admin') {
+            return res.status(400).end('User cannot be edited');
         }
 
         if (password) {
@@ -85,12 +104,12 @@ const update = async (req, res, next) => {
             const usernameExists = await User.findOne({ username });
 
             if (usernameExists) {
-                return res.status(400).send(`User with "${username}" already exists.`);
+                return res.status(400).end(`User with "${username}" already exists.`);
             }
         }
 
         if (toUpdateFields.roles && toUpdateFields.roles.length === 0) {
-            return res.status(400).send('User must have at least one role.');
+            return res.status(400).end('User must have at least one role.');
         }
 
         const updatedUser = await User.findByIdAndUpdate(userId, toUpdateFields);
@@ -109,6 +128,25 @@ const update = async (req, res, next) => {
 const destroy = async (req, res, next) => {
     try {
         const { userId } = req.params;
+
+        const user = await User.findById(userId);
+
+        if(!user) {
+            return res.status(404).end('User not found');
+        }
+        
+        if(user.username == 'admin') {
+            return res.status(400).end('User cannot be deleted');
+        }
+
+        if(user.pds) {
+            const pds = await PDS.findById(user.pds);
+
+            if(pds) {
+                await PDS.findByIdAndDelete(pds._id);
+            }
+        }
+
         await User.findByIdAndDelete(userId);
         res.sendStatus(204);
     } catch (error) {

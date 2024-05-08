@@ -1,5 +1,9 @@
 const { default: mongoose } = require('mongoose');
 const PDS = require('../database/models/employee/PDS');
+const User = require('../database/models/authentication/user');
+const { USERNAME_ID_START, EMPLOYEE } = require('../constants');
+const { hashPassword } = require('./authenticationMiddlewares');
+const { Role } = require('../database/models/authentication/role');
 
 // Middleware function to list PDS documents with pagination and search
 const listPDS = async (req, res, next) => {
@@ -46,10 +50,84 @@ const listPDS = async (req, res, next) => {
 // Middleware function to create a new PDS document
 const createPDS = async (req, res, next) => {
     try {
+        let userId = req.body.user_id;
+        let targetUser = null;
+        let hasAccount = false;
+        let returnData = {};
+
+        if (userId && !mongoose.isValidObjectId(userId)) {
+            return res.status(404).end('User not found');
+        }
+
+        if (userId) {
+            delete req.body.userId;
+
+            targetUser = await User.findById(userId);
+
+            if (!mongoose.isValidObjectId(userId)) {
+                return res.status(404).end('User not found');
+            }
+        }
+
+        // assumes that required fields are available
         const newPDS = new PDS(req.body);
         const savedPDS = await newPDS.save();
-        res.status(201).json(savedPDS);
+
+        returnData.pds = savedPDS;
+
+        if (!targetUser) {
+            // Get the count of existing users
+            const userCount = await User.countDocuments();
+
+            let username = USERNAME_ID_START + userCount;
+
+            let passwordFields = [
+                savedPDS.personal_information.name.firstname,
+                savedPDS.personal_information.birth_date,
+            ];
+
+            passwordFields = passwordFields.map((pf) => (
+                pf.trim()
+            ));
+
+            let password = passwordFields.join('-');
+            let encryptedPassword = await hashPassword(password);
+
+            let existUser = await User.findOne({ username: username });
+
+            if (existUser) {
+                savedPDS.delete();
+                return res.status(400).send(`User with '${username}' user name already exists.`);
+            }
+
+            const existingRole = await Role.findOne({ code: EMPLOYEE });
+            const newUser = new User({
+                username: username,
+                password: encryptedPassword,
+                roles: [existingRole],
+                pds: savedPDS,
+            });
+
+            await newUser.save();
+
+            returnData.username = username;
+
+            console.log(username, password);
+        }
+        else {
+            targetUser.pds = savedPDS;
+            await targetUser.save();
+
+            hasAccount = true;
+        }
+
+        returnData.has_account = hasAccount;
+        res.status(201).json(returnData);
     } catch (error) {
+        if (error?.code === 11000) {
+            return res.status(400).send("Employee details already exists.");
+        }
+
         next(error);
     }
 };
@@ -59,7 +137,7 @@ const deletePDS = async (req, res, next) => {
     try {
         let pdsId = req.params.pdsId;
 
-        if(!mongoose.isValidObjectId(pdsId)) {
+        if (!mongoose.isValidObjectId(pdsId)) {
             return res.status(404).json({ message: 'PDS not found' });
         }
 
@@ -78,7 +156,7 @@ const updatePDS = async (req, res, next) => {
     try {
         let pdsId = req.params.pdsId;
 
-        if(!mongoose.isValidObjectId(pdsId)) {
+        if (!mongoose.isValidObjectId(pdsId)) {
             return res.status(404).json({ message: 'PDS not found' });
         }
 
@@ -97,7 +175,7 @@ const getPDSById = async (req, res, next) => {
     try {
         const pdsId = req.params.pdsId;
 
-        if(!mongoose.isValidObjectId(pdsId)) {
+        if (!mongoose.isValidObjectId(pdsId)) {
             return res.status(404).json({ message: 'PDS not found' });
         }
 

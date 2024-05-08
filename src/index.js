@@ -31,9 +31,9 @@ const DB_CONNECTION = process.env.DB_CONNECTION;
 // Middleware to parse JSON bodies
 app.use(cors());
 app.use(bodyParser.json());
-app.use('/api', authenticateToken, hasRolesMiddleware([
-    ADMIN,
-]));
+// app.use('/api', authenticateToken, hasRolesMiddleware([
+//     ADMIN,
+// ]));
 
 async function initDb() {
     await mongoose.connect(DB_CONNECTION);

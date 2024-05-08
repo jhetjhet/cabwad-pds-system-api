@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 const {
     SUPER_ADMIN,
     ADMIN,
+    EMPLOYEE,
 } = require('../../../constants');
 
 const ROLES = [
@@ -15,6 +16,11 @@ const ROLES = [
     {
         code: ADMIN,
         name: 'Admin',
+        description: '-',
+    },
+    {
+        code: EMPLOYEE,
+        name: 'Employee',
         description: '-',
     },
 ];

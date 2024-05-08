@@ -11,6 +11,11 @@ const userSchema = mongoose.Schema({
         type: String,
         required: true,
     },
+    pds: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'PDS',
+        default: null,
+    },
     roles: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Role' }] // Reference to Role schema
 }, {
     toJSON: {

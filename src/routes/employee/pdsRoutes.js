@@ -7,12 +7,16 @@ const {
     getPDSById,
 } = require('../../middlewares/pdsMiddleware');
 
+const {
+    authenticateToken,
+} = require('../../middlewares/authenticationMiddlewares');
+
 const router = express.Router();
 
-router.get('/', listPDS);
+router.get('/', authenticateToken, listPDS);
 router.post('/', createPDS);
-router.get('/:pdsId', getPDSById);
-router.put('/:pdsId', updatePDS);
-router.delete('/:pdsId', deletePDS);
+router.get('/:pdsId', authenticateToken, getPDSById);
+router.put('/:pdsId', authenticateToken, updatePDS);
+router.delete('/:pdsId', authenticateToken, deletePDS);
 
 module.exports = express.Router().use('/pds', router);
