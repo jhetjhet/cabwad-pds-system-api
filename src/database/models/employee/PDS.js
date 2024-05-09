@@ -46,6 +46,15 @@ const pdsSchema = mongoose.Schema({
         type: mongoose.Schema.Types.Mixed,
         default: {},
     },
+    // disciplinary_actions
+    disciplinary_actions: {
+        type: mongoose.Schema.Types.Mixed,
+        default: {},
+    },
+    leave: {
+        type: mongoose.Schema.Types.Mixed,
+        default: {},
+    }
 });
 
 // Create compound index for unique combination of fields
