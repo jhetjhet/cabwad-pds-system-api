@@ -4,7 +4,6 @@ const User = require('../database/models/authentication/user');
 const { USERNAME_ID_START, EMPLOYEE } = require('../constants');
 const { hashPassword } = require('./authenticationMiddlewares');
 const { Role } = require('../database/models/authentication/role');
-const { nanoid } = require('nanoid');
 
 // Middleware function to list PDS documents with pagination and search
 const listPDS = async (req, res, next) => {
@@ -77,7 +76,7 @@ const createPDS = async (req, res, next) => {
         returnData.pds = savedPDS;
 
         if (!targetUser) {
-            let username = nanoid(6);
+            let username = savedPDS.personal_information.agency_employee_no;
 
             let passwordFields = [
                 savedPDS.personal_information.name.firstname,
@@ -94,7 +93,6 @@ const createPDS = async (req, res, next) => {
             let existUser = await User.findOne({ username: username });
 
             if (existUser) {
-                savedPDS.delete();
                 return res.status(400).send(`User with '${username}' user name already exists.`);
             }
 
